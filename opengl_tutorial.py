@@ -1,7 +1,6 @@
 import math
+import os
 
-import pygame
-from OpenGL.GL import *
 from OpenGL.GLU import *
 
 from graphics import *
@@ -21,8 +20,8 @@ class Cube(object):
         self.rubik_id = load_texture("rubik.png")
         self.surface_id = load_texture("ConcreteTriangles.png")
         self.coordinates = [0, 0, 0]
-        self.ground = ObjLoader("plane.txt")
-        self.cube = ObjLoader("cube.txt")
+        self.ground = ObjectLoader("plane.txt")
+        self.cube = ObjectLoader("cube.txt")
 
     def render_scene(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -44,12 +43,12 @@ class Cube(object):
         self.cube.render_texture(self.rubik_id, ((0, 0), (1, 0), (1, 1), (0, 1)))
 
     def move_forward(self):
-        self.coordinates[2] += 0.1 * math.cos(math.radians(self.angle))
         self.coordinates[0] -= 0.1 * math.sin(math.radians(self.angle))
+        self.coordinates[2] += 0.1 * math.cos(math.radians(self.angle))
 
     def move_back(self):
-        self.coordinates[2] -= 0.1 * math.cos(math.radians(self.angle))
         self.coordinates[0] += 0.1 * math.sin(math.radians(self.angle))
+        self.coordinates[2] -= 0.1 * math.cos(math.radians(self.angle))
 
     def move_left(self):
         self.coordinates[0] += 0.1 * math.cos(math.radians(self.angle))
@@ -75,10 +74,10 @@ class Cube(object):
             self.move_back()
 
         pos = pygame.mouse.get_pos()
-        if pos[0] < 75:
-            self.rotate(-1.2)
-        elif pos[0] > 565:
-            self.rotate(1.2)
+        if pos[0] < 100:
+            self.rotate(-2)
+        elif pos[0] > 540:
+            self.rotate(2)
 
         if self.cube_angle >= 360:
             self.cube_angle = 0
@@ -96,6 +95,7 @@ class Cube(object):
         glDeleteTextures(self.surface_id)
 
 
+os.environ['SDL_VIDEO_CENTERED'] = '1'
 pygame.init()
 pygame.display.set_mode((640, 480), pygame.DOUBLEBUF | pygame.OPENGL)
 pygame.display.set_caption("Computer Graphics")
@@ -116,27 +116,27 @@ while keep_loop:
             keep_loop = False
 
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT or event.key == pygame.K_a:
+            if event.key == pygame.K_LEFT:
                 cube.move_left()
                 cube.left_key = True
-            elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+            elif event.key == pygame.K_RIGHT:
                 cube.move_right()
                 cube.right_key = True
-            elif event.key == pygame.K_UP or event.key == pygame.K_w:
+            elif event.key == pygame.K_UP:
                 cube.move_forward()
                 cube.up_key = True
-            elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
+            elif event.key == pygame.K_DOWN:
                 cube.move_back()
                 cube.down_key = True
 
         if event.type == pygame.KEYUP:
-            if event.key == pygame.K_LEFT or event.key == pygame.K_a:
+            if event.key == pygame.K_LEFT:
                 cube.keyup()
-            elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+            elif event.key == pygame.K_RIGHT:
                 cube.keyup()
-            elif event.key == pygame.K_UP or event.key == pygame.K_w:
+            elif event.key == pygame.K_UP:
                 cube.keyup()
-            elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
+            elif event.key == pygame.K_DOWN:
                 cube.keyup()
 
     cube.update()
