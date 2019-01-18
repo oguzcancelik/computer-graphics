@@ -14,6 +14,7 @@ class Cube(object):
     w_key = False
     s_key = False
     angle = 0
+    angle2 = 0
     cube_angle = 0
 
     def __init__(self):
@@ -36,7 +37,8 @@ class Cube(object):
         glLightfv(GL_LIGHT0, GL_DIFFUSE, [2, 2, 2, 1])
         glLightfv(GL_LIGHT0, GL_POSITION, [4, 8, 1, 1])
         glTranslatef(0, -0.5, 0)
-        gluLookAt(0, 0, 0, math.sin(math.radians(self.angle)), 0, math.cos(math.radians(self.angle)) * -1, 0, 1, 0)
+        gluLookAt(0, 0, 0, math.sin(math.radians(self.angle)), math.sin(math.radians(self.angle2)),
+                  math.cos(math.radians(self.angle)) * -1, 0, 1, 0)
         glTranslatef(self.coordinates[0], self.coordinates[1], self.coordinates[2])
         self.ground.render_texture(self.surface_id, ((0, 0), (2, 0), (2, 2), (0, 2)))
         glTranslatef(-7.5, 2, 0)
@@ -48,24 +50,26 @@ class Cube(object):
         self.coordinates[0] -= 0.5 * math.sin(math.radians(self.angle))
 
     def move_back(self):
-        self.coordinates[0] += 0.5 * math.sin(math.radians(self.angle))
+        self.coordinates[0] += math.sin(math.radians(self.angle))
 
     def move_left(self):
-        self.coordinates[2] -= 0.5 * math.cos(math.radians(self.angle))
+        self.coordinates[2] -= math.cos(math.radians(self.angle))
 
     def move_right(self):
         self.coordinates[2] += 0.5 * math.cos(math.radians(self.angle))
 
     def move_up(self):
-        self.coordinates[1] -= 0.1 * math.tan(math.radians(self.angle))
+        self.coordinates[1] += 0.01 * math.tan(math.radians(self.angle))
 
     def move_down(self):
-        self.coordinates[1] += 0.1 * math.tan(math.radians(self.angle))
+        self.coordinates[1] -= 0.01 * math.tan(math.radians(self.angle))
 
-    def rotate(self, n):
+    def rotate(self, n, m):
         if self.angle >= 360 or self.angle <= -360:
             self.angle = 0
         self.angle += n
+        if -360 <= self.angle2 + m <= 360:
+            self.angle2 += m
 
     def update(self):
         if self.left_key:
@@ -82,10 +86,14 @@ class Cube(object):
             self.move_down()
 
         pos = pygame.mouse.get_pos()
-        if pos[0] < 100:
-            self.rotate(-2)
-        elif pos[0] > 540:
-            self.rotate(2)
+        if pos[0] < 100 and 100 < pos[1] < 540:
+            self.rotate(-2, 0)
+        elif pos[0] > 540 and 100 < pos[1] < 540:
+            self.rotate(2, 0)
+        if pos[1] < 100 and 100 < pos[0] < 540:
+            self.rotate(0, 2)
+        elif pos[1] > 540 and 100 < pos[0] < 540:
+            self.rotate(0, -2)
 
         if self.cube_angle >= 360:
             self.cube_angle = 0
@@ -107,13 +115,13 @@ class Cube(object):
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 pygame.init()
-pygame.display.set_mode((640, 480), pygame.DOUBLEBUF | pygame.OPENGL)
+pygame.display.set_mode((640, 640), pygame.DOUBLEBUF | pygame.OPENGL)
 pygame.display.set_caption("Computer Graphics")
 clock = pygame.time.Clock()
 keep_loop = True
 glMatrixMode(GL_PROJECTION)
 glLoadIdentity()
-gluPerspective(45, 640.0 / 480.0, 0.1, 200.0)
+gluPerspective(45, 640.0 / 640.0, 0.1, 200.0)
 glEnable(GL_DEPTH_TEST)
 glEnable(GL_LIGHTING)
 glEnable(GL_LIGHT0)
