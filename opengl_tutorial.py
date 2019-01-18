@@ -16,6 +16,7 @@ class Cube(object):
     angle = 0
     angle2 = 0
     cube_angle = 0
+    dist = 0.5
 
     def __init__(self):
         self.vertices = []
@@ -47,22 +48,22 @@ class Cube(object):
         self.cube.render_texture(self.rubik_id, ((0, 0), (1, 0), (1, 1), (0, 1)))
 
     def move_forward(self):
-        self.coordinates[0] -= 0.5 * math.sin(math.radians(self.angle))
+        self.coordinates[0] += self.dist
 
     def move_back(self):
-        self.coordinates[0] += math.sin(math.radians(self.angle))
+        self.coordinates[0] -= self.dist
 
     def move_left(self):
-        self.coordinates[2] -= math.cos(math.radians(self.angle))
+        self.coordinates[2] -= self.dist
 
     def move_right(self):
-        self.coordinates[2] += 0.5 * math.cos(math.radians(self.angle))
+        self.coordinates[2] += self.dist
 
     def move_up(self):
-        self.coordinates[1] += 0.01 * math.tan(math.radians(self.angle))
+        self.coordinates[1] -= self.dist
 
     def move_down(self):
-        self.coordinates[1] -= 0.01 * math.tan(math.radians(self.angle))
+        self.coordinates[1] += self.dist
 
     def rotate(self, n, m):
         if self.angle >= 360 or self.angle <= -360:
@@ -86,13 +87,13 @@ class Cube(object):
             self.move_down()
 
         pos = pygame.mouse.get_pos()
-        if pos[0] < 100 and 100 < pos[1] < 540:
+        if pos[0] < 100 and pos[1] in range(99, 540):
             self.rotate(-2, 0)
-        elif pos[0] > 540 and 100 < pos[1] < 540:
+        elif pos[0] > 540 and pos[1] in range(99, 540):
             self.rotate(2, 0)
-        if pos[1] < 100 and 100 < pos[0] < 540:
+        if pos[1] < 100 and pos[0] in range(99, 540):
             self.rotate(0, 2)
-        elif pos[1] > 540 and 100 < pos[0] < 540:
+        elif pos[1] > 540 and pos[0] in range(99, 540):
             self.rotate(0, -2)
 
         if self.cube_angle >= 360:
@@ -133,7 +134,7 @@ while keep_loop:
         if event.type == pygame.QUIT:
             keep_loop = False
 
-        if event.type == pygame.KEYDOWN:
+        elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 cube.move_left()
                 cube.left_key = True
@@ -152,8 +153,10 @@ while keep_loop:
             elif event.key == pygame.K_s:
                 cube.move_down()
                 cube.s_key = True
+            elif event.key == pygame.K_r:
+                cube.coordinates = [0, 0, 0]
 
-        if event.type == pygame.KEYUP:
+        elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
                 cube.keyup()
             elif event.key == pygame.K_RIGHT:
