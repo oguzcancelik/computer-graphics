@@ -11,6 +11,8 @@ class Cube(object):
     right_key = False
     up_key = False
     down_key = False
+    w_key = False
+    s_key = False
     angle = 0
     cube_angle = 0
 
@@ -43,20 +45,22 @@ class Cube(object):
         self.cube.render_texture(self.rubik_id, ((0, 0), (1, 0), (1, 1), (0, 1)))
 
     def move_forward(self):
-        self.coordinates[0] -= 0.1 * math.sin(math.radians(self.angle))
-        self.coordinates[2] += 0.1 * math.cos(math.radians(self.angle))
+        self.coordinates[0] -= 0.5 * math.sin(math.radians(self.angle))
 
     def move_back(self):
-        self.coordinates[0] += 0.1 * math.sin(math.radians(self.angle))
-        self.coordinates[2] -= 0.1 * math.cos(math.radians(self.angle))
+        self.coordinates[0] += 0.5 * math.sin(math.radians(self.angle))
 
     def move_left(self):
-        self.coordinates[0] += 0.1 * math.cos(math.radians(self.angle))
-        self.coordinates[2] += 0.1 * math.sin(math.radians(self.angle))
+        self.coordinates[2] -= 0.5 * math.cos(math.radians(self.angle))
 
     def move_right(self):
-        self.coordinates[0] -= 0.1 * math.cos(math.radians(self.angle))
-        self.coordinates[2] -= 0.1 * math.sin(math.radians(self.angle))
+        self.coordinates[2] += 0.5 * math.cos(math.radians(self.angle))
+
+    def move_up(self):
+        self.coordinates[1] -= 0.1 * math.tan(math.radians(self.angle))
+
+    def move_down(self):
+        self.coordinates[1] += 0.1 * math.tan(math.radians(self.angle))
 
     def rotate(self, n):
         if self.angle >= 360 or self.angle <= -360:
@@ -72,6 +76,10 @@ class Cube(object):
             self.move_forward()
         elif self.down_key:
             self.move_back()
+        elif self.w_key:
+            self.move_up()
+        elif self.s_key:
+            self.move_down()
 
         pos = pygame.mouse.get_pos()
         if pos[0] < 100:
@@ -89,6 +97,8 @@ class Cube(object):
         self.right_key = False
         self.up_key = False
         self.down_key = False
+        self.w_key = False
+        self.s_key = False
 
     def delete_texture(self):
         glDeleteTextures(self.rubik_id)
@@ -128,6 +138,12 @@ while keep_loop:
             elif event.key == pygame.K_DOWN:
                 cube.move_back()
                 cube.down_key = True
+            elif event.key == pygame.K_w:
+                cube.move_up()
+                cube.w_key = True
+            elif event.key == pygame.K_s:
+                cube.move_down()
+                cube.s_key = True
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
@@ -138,12 +154,14 @@ while keep_loop:
                 cube.keyup()
             elif event.key == pygame.K_DOWN:
                 cube.keyup()
+            elif event.key == pygame.K_w:
+                cube.keyup()
+            elif event.key == pygame.K_s:
+                cube.keyup()
 
     cube.update()
     cube.render_scene()
-
     pygame.display.flip()
     clock.tick(30)
-
 cube.delete_texture()
 pygame.quit()

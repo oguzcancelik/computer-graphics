@@ -14,7 +14,7 @@ def load_texture(file_name):
     return texture_id
 
 
-class ObjLoader(object):
+class ObjectLoader(object):
     def __init__(self, file_name):
         self.vertices = []
         self.triangle_faces = []
