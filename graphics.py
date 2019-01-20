@@ -17,9 +17,7 @@ def load_texture(file_name):
 class ObjectLoader(object):
     def __init__(self, file_name):
         self.vertices = []
-        self.triangle_faces = []
         self.quad_faces = []
-        self.polygon_faces = []
         self.normals = []
         try:
             f = open(file_name)
@@ -43,7 +41,6 @@ class ObjectLoader(object):
                     self.normals.append(normal)
 
                 elif line[0] == "f":
-                    line = line.replace("//", "/")
                     face = []
                     i = line.find(" ") + 1
                     for item in range(line.count(" ")):
@@ -52,28 +49,13 @@ class ObjectLoader(object):
                             break
                         face.append(line[i:line.find(" ", i)])
                         i = line.find(" ", i) + 1
-                    if line.count("/") == 3:
-                        self.triangle_faces.append(tuple(face))
-                    elif line.count("/") == 4:
-                        self.quad_faces.append(tuple(face))
-                    else:
-                        self.polygon_faces.append(tuple(face))
+                    self.quad_faces.append(tuple(face))
             f.close()
         except IOError:
-            print("Could not open the .obj file...")
+            print("Could not open the .obj file: ", file_name)
 
     def render_scene(self):
-        if len(self.triangle_faces) > 0:
-            glBegin(GL_TRIANGLES)
-            for face in self.triangle_faces:
-                n = face[0]
-                normal = self.normals[int(n[n.find("/") + 1:]) - 1]
-                glNormal3fv(normal)
-                for f in face:
-                    glVertex3fv(self.vertices[int(f[:f.find("/")]) - 1])
-            glEnd()
-
-        if len(self.quad_faces) > 0:
+        if self.quad_faces:
             glBegin(GL_QUADS)
             for face in self.quad_faces:
                 n = face[0]
@@ -82,16 +64,6 @@ class ObjectLoader(object):
                 for f in face:
                     glVertex3fv(self.vertices[int(f[:f.find("/")]) - 1])
             glEnd()
-
-        if len(self.polygon_faces) > 0:
-            for face in self.polygon_faces:
-                glBegin(GL_POLYGON)
-                n = face[0]
-                normal = self.normals[int(n[n.find("/") + 1:]) - 1]
-                glNormal3fv(normal)
-                for f in face:
-                    glVertex3fv(self.vertices[int(f[:f.find("/")]) - 1])
-                glEnd()
 
     def render_texture(self, texture_id, texture_coordinates):
         glEnable(GL_TEXTURE_2D)
