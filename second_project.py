@@ -65,12 +65,12 @@ class Cube(object):
     def move_down(self):
         self.coordinates[1] += self.dist
 
-    def rotate(self, n, m):
+    def rotate(self, horizontal, vertical):
         if self.angle >= 360 or self.angle <= -360:
             self.angle = 0
-        self.angle += n
-        if -360 <= self.angle2 + m <= 360:
-            self.angle2 += m
+        self.angle += horizontal
+        if -360 <= self.angle2 + vertical <= 360:
+            self.angle2 += vertical
 
     def update(self):
         if self.s_key:
@@ -86,14 +86,14 @@ class Cube(object):
         elif self.down_key:
             self.move_down()
 
-        pos = pygame.mouse.get_pos()
-        if pos[0] < 100 and pos[1] in range(99, 380):
+        position = pygame.mouse.get_pos()
+        if position[0] < 100 and position[1] in range(99, 380):
             self.rotate(-2, 0)
-        elif pos[0] > 540 and pos[1] in range(99, 380):
+        elif position[0] > 540 and position[1] in range(99, 380):
             self.rotate(2, 0)
-        if pos[1] < 100 and pos[0] in range(99, 540):
+        if position[1] < 100 and position[0] in range(99, 540):
             self.rotate(0, 0.05)
-        elif pos[1] > 380 and pos[0] in range(99, 540):
+        elif position[1] > 380 and position[0] in range(99, 540):
             self.rotate(0, -0.05)
 
         if not self.stop:
@@ -155,7 +155,7 @@ while keep_loop:
                 cube.move_down()
                 cube.down_key = True
             elif event.key == pygame.K_r:
-                cube.coordinates = [0, -15, -50]
+                cube.coordinates = [0, -8, -50]
             elif event.key == pygame.K_c:
                 glClearColor(random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1))
             elif event.key == pygame.K_v:
